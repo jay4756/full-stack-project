@@ -1,50 +1,42 @@
 import React, { useEffect, useState } from "react";
-import api from "../api/bootapi";
+import axios from "axios"; // Using standard axios for simplicity
 
 const ViewCourse = () => {
     const [courses, setCourses] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
 
-    const loadCourses = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await api.get('/courses');
-            setCourses(Array.isArray(response.data) ? response.data : []);
-        } catch (e) {
-            console.error("Fetch error:", e);
-            setError("Cannot connect to server. Ensure Backend is running on port 2005.");
-        } finally {
-            setLoading(false);
-        }
+    // 1. Function to get data
+    const getCourses = () => {
+        axios.get("http://localhost:2005/courses").then(
+            (response) => {
+                setCourses(response.data); // Success: Set data to state
+            },
+            (error) => {
+                alert("Server Error: Check if backend is running."); // Error: Alert user
+            }
+        );
     };
 
+    // 2. Run getCourses when the page loads
     useEffect(() => {
-        loadCourses();
+        getCourses();
     }, []);
 
     return (
-        <div className="border p-3 bg-light text-center">
-            <h2>View Courses</h2>
-            <button className="btn btn-secondary btn-sm mb-3" onClick={loadCourses}>
-                {loading ? "Loading..." : "Refresh"}
-            </button>
-            
-            {error && <p className="text-danger">{error}</p>}
+        <div className="container text-center mt-3">
+            <h2>All Courses</h2>
+            <button className="btn btn-primary mb-3" onClick={getCourses}>Refresh List</button>
 
-            <div className="mt-2">
-                {courses.length === 0 && !loading ? (
-                    <p>No courses available.</p>
-                ) : (
-                    courses.map((c, index) => (
-                        <div key={index} className="border p-2 mb-2 bg-white">
-                            <h5>{c.title}</h5>
-                            <p>{c.description}</p>
-                        </div>
-                    ))
-                )}
-            </div>
+            {/* 3. Display data using map */}
+            {courses.length > 0 ? (
+                courses.map((item) => (
+                    <div key={item.id} className="card p-3 mb-2 shadow-sm">
+                        <h4>{item.title}</h4>
+                        <p>{item.description}</p>
+                    </div>
+                ))
+            ) : (
+                <p>No courses found.</p>
+            )}
         </div>
     );
 };
