@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @Table
 @AllArgsConstructor
 @NoArgsConstructor
-@lombok.Getter
-@lombok.Setter
+@Getter
+@Setter
 public class Course {
     
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
-    private Long Id;
+    private Long id;
 
     @Column
     private String title;
@@ -31,3 +31,4 @@ public class Course {
 
 
 }
+
